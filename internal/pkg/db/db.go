@@ -51,6 +51,7 @@ type PBToORMConverter interface {
 // Create database and initialize schema.
 func CreateSchema(dbFile string) (*gorm.DB, error) {
 	logger = utils.NewLogger("")
+	logger.Debug("Using database connection string", "dbFile", dbFile, "dsnParams", dsnParams)
 
 	if db != nil {
 		logger.Info("Database file already exists, will not recreate")
@@ -58,7 +59,6 @@ func CreateSchema(dbFile string) (*gorm.DB, error) {
 	}
 
 	logger.Info("Initializing database")
-	logger.Debug("Connection string", "dbFile", dbFile, "dsnParams", dsnParams)
 
 	var err error
 
@@ -127,4 +127,19 @@ func GetDocumentByID(id uint32) *protobom.Document {
 	}
 
 	return &document
+}
+
+func GetAllDocuments() ([]*protobom.Document, error) {
+	var (
+		documents    []*protobom.Document
+		ormDocuments []protobom.DocumentORM
+	)
+
+	db.Select("id").Find(&ormDocuments)
+
+	for _, ormDocument := range ormDocuments {
+		documents = append(documents, GetDocumentByID(ormDocument.Id))
+	}
+
+	return documents, nil
 }
