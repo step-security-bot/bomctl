@@ -34,6 +34,8 @@ import (
 
 type GitFetcher struct{}
 
+func (gf *GitFetcher) Name() string { return "Git" }
+
 func (gf *GitFetcher) RegExp() *regexp.Regexp {
 	return regexp.MustCompile(
 		fmt.Sprintf("^%s%s%s%s%s$",
@@ -57,6 +59,13 @@ func (gf *GitFetcher) Parse(fetchURL string) *url.ParsedURL {
 
 	if results["scheme"] == "" {
 		results["scheme"] = "ssh"
+	}
+
+	// Ensure required map fields are present
+	for _, required := range []string{"scheme", "hostname", "path", "gitRef", "fragment"} {
+		if value, ok := results[required]; !ok || value == "" {
+			return nil
+		}
 	}
 
 	return &url.ParsedURL{

@@ -114,6 +114,6 @@ func (url *ParsedURL) String() string {
 }
 
 type URLParser interface {
-	Parse(fetchURL string) *ParsedURL
+	Parse(url string) *ParsedURL
 	RegExp() *regexp.Regexp
 }

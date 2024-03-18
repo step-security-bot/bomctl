@@ -35,19 +35,42 @@ func TestHTTPFetcherParse(t *testing.T) {
 		url      string
 	}{
 		{
-			name:     "HTTP hostname only",
-			url:      "http://example.acme.com",
-			expected: &url.ParsedURL{Scheme: "http", Hostname: "example.acme.com"},
+			name: "http scheme",
+			url:  "http://example.acme.com/path/to/sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "http",
+				Hostname: "example.acme.com",
+				Path:     "path/to/sbom.cdx.json",
+			},
 		},
 		{
-			name:     "HTTPS hostname only",
-			url:      "https://example.acme.com",
-			expected: &url.ParsedURL{Scheme: "https", Hostname: "example.acme.com"},
+			name: "https scheme",
+			url:  "https://example.acme.com/path/to/sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "https",
+				Hostname: "example.acme.com",
+				Path:     "path/to/sbom.cdx.json",
+			},
 		},
 		{
-			name:     "HTTPS username@hostname",
+			name: "https username@hostname",
+			url:  "https://user@example.acme.com/path/to/sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "https",
+				Username: "user",
+				Hostname: "example.acme.com",
+				Path:     "path/to/sbom.cdx.json",
+			},
+		},
+		{
+			name:     "missing path",
 			url:      "https://user@example.acme.com",
-			expected: &url.ParsedURL{Scheme: "https", Username: "user", Hostname: "example.acme.com"},
+			expected: nil,
+		},
+		{
+			name:     "missing scheme",
+			url:      "example.acme.com/path/to/sbom.cdx.json",
+			expected: nil,
 		},
 	} {
 		t.Run(data.name, func(t *testing.T) {

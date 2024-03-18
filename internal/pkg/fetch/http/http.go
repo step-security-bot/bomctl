@@ -37,13 +37,15 @@ type HTTPFetcher struct {
 	OutputFile string
 }
 
+func (hf *HTTPFetcher) Name() string { return "HTTP" }
+
 func (hf *HTTPFetcher) RegExp() *regexp.Regexp {
 	return regexp.MustCompile(
 		fmt.Sprintf("%s%s%s%s",
-			`((?P<scheme>https?)://)`,
+			`((?P<scheme>https?):\/\/)`,
 			`((?P<username>[^:]+)(?::(?P<password>[^@]+))?(?:@))?`,
-			`(?P<hostname>[^@/?#:]*)(?::(?P<port>\d+)?)?`,
-			`(/?(?P<path>[^@?#]*))(\?(?P<query>[^#]*))?(#(?P<fragment>.*))?`,
+			`(?P<hostname>[^@\/?#:]*)(?::(?P<port>\d+)?)?`,
+			`(\/?(?P<path>[^@?#]*))(\?(?P<query>[^#]*))?(#(?P<fragment>.*))?`,
 		),
 	)
 }
@@ -55,6 +57,13 @@ func (hf *HTTPFetcher) Parse(fetchURL string) *url.ParsedURL {
 
 	for idx, name := range match {
 		results[pattern.SubexpNames()[idx]] = name
+	}
+
+	// Ensure required map fields are present
+	for _, required := range []string{"scheme", "hostname", "path"} {
+		if value, ok := results[required]; !ok || value == "" {
+			return nil
+		}
 	}
 
 	return &url.ParsedURL{

@@ -35,38 +35,10 @@ func TestGitFetcherParse(t *testing.T) {
 		url      string
 	}{
 		{
-			name:     "git+http scheme",
-			url:      "git+http://github.com/bomctl/bomctl.git",
-			expected: &url.ParsedURL{Scheme: "http", Hostname: "github.com", Path: "bomctl/bomctl.git"},
-		},
-		{
-			name: "git+https scheme with username, port",
-			url:  "git+https://git@github.com:12345/bomctl/bomctl.git",
+			name: "git+http scheme",
+			url:  "git+http://github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
-				Scheme:   "https",
-				Username: "git",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "git+https scheme with username, password, port",
-			url:  "git+https://username:password@github.com:12345/bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "https",
-				Username: "username",
-				Password: "password",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "git+https scheme with ref, file path",
-			url:  "git+https://github.com/bomctl/bomctl.git@main#sbom.cdx.json",
-			expected: &url.ParsedURL{
-				Scheme:   "https",
+				Scheme:   "http",
 				Hostname: "github.com",
 				Path:     "bomctl/bomctl.git",
 				GitRef:   "main",
@@ -74,7 +46,34 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name: "git+https scheme with username, ref, file path",
+			name: "git+https scheme with username, port",
+			url:  "git+https://git@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "https",
+				Username: "git",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "git+https scheme with username, password, port",
+			url:  "git+https://username:password@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "https",
+				Username: "username",
+				Password: "password",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "git+https scheme with username",
 			url:  "git+https://git@github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "https",
@@ -86,35 +85,7 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name:     "ssh scheme",
-			url:      "ssh://github.com/bomctl/bomctl.git",
-			expected: &url.ParsedURL{Scheme: "ssh", Hostname: "github.com", Path: "bomctl/bomctl.git"},
-		},
-		{
-			name: "ssh scheme with username, port",
-			url:  "ssh://git@github.com:12345/bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "ssh",
-				Username: "git",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "ssh scheme with username, password, port",
-			url:  "ssh://username:password@github.com:12345/bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "ssh",
-				Username: "username",
-				Password: "password",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "ssh scheme with ref, file path",
+			name: "ssh scheme",
 			url:  "ssh://github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "ssh",
@@ -125,7 +96,34 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name: "ssh scheme with username, ref, file path",
+			name: "ssh scheme with username, port",
+			url:  "ssh://git@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "ssh",
+				Username: "git",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "ssh scheme with username, password, port",
+			url:  "ssh://username:password@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "ssh",
+				Username: "username",
+				Password: "password",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "ssh scheme with username",
 			url:  "ssh://git@github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "ssh",
@@ -137,35 +135,7 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name:     "git scheme",
-			url:      "git://github.com/bomctl/bomctl.git",
-			expected: &url.ParsedURL{Scheme: "git", Hostname: "github.com", Path: "bomctl/bomctl.git"},
-		},
-		{
-			name: "git scheme with username, port",
-			url:  "git://git@github.com:12345/bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "git",
-				Username: "git",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "git scheme with username, password, port",
-			url:  "git://username:password@github.com:12345/bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "git",
-				Username: "username",
-				Password: "password",
-				Hostname: "github.com",
-				Port:     "12345",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "git scheme with ref, file path",
+			name: "git scheme",
 			url:  "git://github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "git",
@@ -176,7 +146,34 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name: "git scheme with username, ref, file path",
+			name: "git scheme with username, port",
+			url:  "git://git@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "git",
+				Username: "git",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "git scheme with username, password, port",
+			url:  "git://username:password@github.com:12345/bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "git",
+				Username: "username",
+				Password: "password",
+				Hostname: "github.com",
+				Port:     "12345",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "git scheme with username",
 			url:  "git://git@github.com/bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "git",
@@ -188,28 +185,7 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name:     "git SCP-like syntax",
-			url:      "github.com:bomctl/bomctl.git",
-			expected: &url.ParsedURL{Scheme: "ssh", Hostname: "github.com", Path: "bomctl/bomctl.git"},
-		},
-		{
-			name:     "git SCP-like syntax with username",
-			url:      "git@github.com:bomctl/bomctl.git",
-			expected: &url.ParsedURL{Scheme: "ssh", Username: "git", Hostname: "github.com", Path: "bomctl/bomctl.git"},
-		},
-		{
-			name: "git SCP-like syntax with username, password",
-			url:  "username:password@github.com:bomctl/bomctl.git",
-			expected: &url.ParsedURL{
-				Scheme:   "ssh",
-				Username: "username",
-				Password: "password",
-				Hostname: "github.com",
-				Path:     "bomctl/bomctl.git",
-			},
-		},
-		{
-			name: "git SCP-like syntax with ref, file path",
+			name: "git SCP-like syntax",
 			url:  "github.com:bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "ssh",
@@ -220,7 +196,7 @@ func TestGitFetcherParse(t *testing.T) {
 			},
 		},
 		{
-			name: "git SCP-like syntax with username, ref, file path",
+			name: "git SCP-like syntax with username",
 			url:  "git@github.com:bomctl/bomctl.git@main#sbom.cdx.json",
 			expected: &url.ParsedURL{
 				Scheme:   "ssh",
@@ -230,6 +206,46 @@ func TestGitFetcherParse(t *testing.T) {
 				GitRef:   "main",
 				Fragment: "sbom.cdx.json",
 			},
+		},
+		{
+			name: "git SCP-like syntax with username, password",
+			url:  "username:password@github.com:bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "ssh",
+				Username: "username",
+				Password: "password",
+				Hostname: "github.com",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name: "git SCP-like syntax with username",
+			url:  "git@github.com:bomctl/bomctl.git@main#sbom.cdx.json",
+			expected: &url.ParsedURL{
+				Scheme:   "ssh",
+				Username: "git",
+				Hostname: "github.com",
+				Path:     "bomctl/bomctl.git",
+				GitRef:   "main",
+				Fragment: "sbom.cdx.json",
+			},
+		},
+		{
+			name:     "path does not end in .git",
+			url:      "git+https://github.com/bomctl/bomctl@main#sbom.cdx.json",
+			expected: nil,
+		},
+		{
+			name:     "missing git ref",
+			url:      "git+https://github.com/bomctl/bomctl.git#sbom.cdx.json",
+			expected: nil,
+		},
+		{
+			name:     "missing path to SBOM file",
+			url:      "git+https://github.com/bomctl/bomctl.git@main",
+			expected: nil,
 		},
 	} {
 		t.Run(data.name, func(t *testing.T) {
