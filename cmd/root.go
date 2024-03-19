@@ -31,18 +31,10 @@ import (
 )
 
 var (
-	cacheDir, cfgFile string
-	logger            *log.Logger
-	verbose           bool
+	cfgFile string
+	logger  *log.Logger
+	verbose bool
 )
-
-func initCache() {
-	if cache, err := os.UserCacheDir(); cacheDir == "" && err == nil {
-		cacheDir = filepath.Join(cache, "bomctl")
-	}
-
-	cobra.CheckErr(os.MkdirAll(cacheDir, os.FileMode(0o700)))
-}
 
 func initConfig() {
 	if cfgFile != "" {
@@ -51,25 +43,24 @@ func initConfig() {
 		cfgDir, err := os.UserConfigDir()
 		cobra.CheckErr(err)
 
-		cfgDir = filepath.Join(cfgDir, "bomctl")
-		cobra.CheckErr(os.MkdirAll(cfgDir, os.FileMode(0o700)))
-
-		viper.AddConfigPath(cfgDir)
-		viper.SetConfigType("yaml")
+		viper.AddConfigPath(filepath.Join(cfgDir, "bomctl"))
+		viper.AddConfigPath(".")
 		viper.SetConfigName("bomctl")
+		viper.SetConfigType("yaml")
 	}
 
+	viper.SetEnvPrefix("bomctl")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	viper.SetDefault("cache_dir", cacheDir)
+	cobra.CheckErr(os.MkdirAll(viper.GetString("cache_dir"), os.FileMode(0o700)))
 }
 
 func rootCmd() *cobra.Command {
-	cobra.OnInitialize(initCache, initConfig)
+	cobra.OnInitialize(initConfig)
 
 	rootCmd := &cobra.Command{
 		Use:     "bomctl",
@@ -80,7 +71,7 @@ func rootCmd() *cobra.Command {
 				log.SetLevel(log.DebugLevel)
 			}
 
-			_, err := db.CreateSchema(filepath.Join(cacheDir, "bomctl.db"))
+			_, err := db.CreateSchema(filepath.Join(viper.GetString("cache_dir"), "bomctl.db"))
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "database creation: %w", err)
 				os.Exit(1)
@@ -88,13 +79,18 @@ func rootCmd() *cobra.Command {
 		},
 	}
 
-	rootCmd.PersistentFlags().StringVar(&cacheDir, "cache-dir", "",
+	cache, err := os.UserCacheDir()
+	cobra.CheckErr(err)
+
+	rootCmd.PersistentFlags().String("cache-dir", filepath.Join(cache, "bomctl"),
 		fmt.Sprintf("cache directory [defaults:\n\t%s\n\t%s\n\t%s",
 			"Unix:    $HOME/.cache/bomctl",
 			"Darwin:  $HOME/Library/Caches/bomctl",
 			"Windows: %LocalAppData%\\bomctl]",
 		),
 	)
+
+	cobra.CheckErr(viper.BindPFlag("cache_dir", rootCmd.PersistentFlags().Lookup("cache-dir")))
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "",
 		fmt.Sprintf("config file [defaults:\n\t%s\n\t%s\n\t%s",

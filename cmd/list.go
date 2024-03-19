@@ -20,7 +20,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/spf13/cobra"
@@ -38,19 +37,14 @@ func listCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			logger = utils.NewLogger("list")
 
-			documents, err := db.GetAllDocuments()
-			if err != nil {
-				logger.Error(err)
-				os.Exit(1)
-			}
+			documents := db.GetAllDocuments()
 
-			headers := []string{"ID", "Alias", "Name", "Version", "# Nodes"}
+			headers := []string{"ID", "Name", "Version", "# Nodes"}
 			rows := [][]string{}
 
 			for _, document := range documents {
 				rows = append(rows, []string{
 					document.Metadata.Id,
-					"",
 					document.Metadata.Name,
 					document.Metadata.Version,
 					fmt.Sprint(len(document.NodeList.Nodes)),

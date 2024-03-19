@@ -36,7 +36,7 @@ import (
 	"github.com/bomctl/bomctl/internal/pkg/utils"
 )
 
-var errUnsupportedURL = errors.New("unsupported URL scheme")
+var errUnsupportedURL = errors.New("failed to parse URL; see `bomctl fetch --help` for valid URL patterns")
 
 type Fetcher interface {
 	url.URLParser
@@ -60,7 +60,7 @@ func Exec(sbomURL, outputFile string, useNetRC bool) error {
 	}
 
 	if parsedURL == nil {
-		return fmt.Errorf("%w", errUnsupportedURL)
+		return fmt.Errorf("%w: '%s'", errUnsupportedURL, sbomURL)
 	}
 
 	auth := &url.BasicAuth{Username: parsedURL.Username, Password: parsedURL.Password}

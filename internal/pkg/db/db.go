@@ -129,7 +129,7 @@ func GetDocumentByID(id uint32) *protobom.Document {
 	return &document
 }
 
-func GetAllDocuments() ([]*protobom.Document, error) {
+func GetAllDocuments() []*protobom.Document {
 	var (
 		documents    []*protobom.Document
 		ormDocuments []protobom.DocumentORM
@@ -138,8 +138,10 @@ func GetAllDocuments() ([]*protobom.Document, error) {
 	db.Select("id").Find(&ormDocuments)
 
 	for _, ormDocument := range ormDocuments {
-		documents = append(documents, GetDocumentByID(ormDocument.Id))
+		if document := GetDocumentByID(ormDocument.Id); document != nil {
+			documents = append(documents, document)
+		}
 	}
 
-	return documents, nil
+	return documents
 }

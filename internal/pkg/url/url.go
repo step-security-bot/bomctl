@@ -110,6 +110,14 @@ func (url *ParsedURL) String() string {
 		urlBytes = append(urlBytes, fmt.Sprintf("#%s", url.Fragment)...)
 	}
 
+	if url.Tag != "" {
+		urlBytes = append(urlBytes, fmt.Sprintf(":%s", url.Tag)...)
+	}
+
+	if url.Digest != "" {
+		urlBytes = append(urlBytes, fmt.Sprintf("@%s", url.Digest)...)
+	}
+
 	return string(urlBytes)
 }
 
